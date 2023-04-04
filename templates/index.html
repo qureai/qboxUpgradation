@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>qUpdater</title>
+    <style>
+      /* CSS code goes here */
+      body {
+        font-family: Arial, sans-serif;
+      }
+      form {
+        width: 500px;
+        margin: 0 auto;
+      }
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      button[type="submit"] {
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button[type="submit"]:hover {
+        background-color: #3e8e41;
+      }
+      h1 {
+            text-align: center;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>qUpdater</h1>
+    <form action="/update" method="POST">
+      <label for="api_path">API Hub Path:</label>
+      <input type="text" name="api_path" id="api_path"><br><br>
+      <label for="cxr_path">CXR Path:</label>
+      <input type="text" name="cxr_path" id="cxr_path"><br><br>
+      <label for="ticketno">Ticket Number:</label>
+      <input type="text" name="ticketno" id="ticketno"><br><br>
+             <div>
+            <span>Mode of Installation:</span>
+            <label>
+                <input type="radio" name="installation_mode" value="online"> Online
+            </label>
+            <label>
+                <input type="radio" name="installation_mode" value="offline"> Offline
+            </label>
+        </div>
+
+      <button type="submit">Update</button>
+    </form>
+  </body>
+</html>
