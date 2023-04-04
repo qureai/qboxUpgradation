@@ -1,0 +1,20 @@
+version: '2'
+services:
+  worker:
+    image: 011855203472.dkr.ecr.ap-south-1.amazonaws.com/cxr_api:${CXRAPI_TAG}
+    container_name: worker1
+    command: bash -c "source activate cxr && python manage.py startworker"
+    restart: unless-stopped
+    volumes:
+    - qxr-data:/srv/data
+    - qxr-checkpoints:/srv/cxr_checkpoints
+    cpuset: "dummy"
+    env_file: cxr.env
+
+volumes:
+  qxr-data:
+    external: true
+  qxr-notebooks:
+    external: true
+  qxr-checkpoints:
+    external: true

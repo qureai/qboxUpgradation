@@ -1,0 +1,64 @@
+version: '2'
+services:
+  workers1:
+    image: qureai/cxr_api:${CXRAPI_TAG}
+    container_name: worker1
+    command: bash -c "source activate cxr && python manage.py startworker"
+    restart: unless-stopped
+    volumes:
+    - qxr-data:/srv/data
+    - qxr-checkpoints:/srv/cxr_checkpoints
+    cpuset: 0,1,2,3,4,6,7,8,9,10
+    env_file: cxr.env
+
+  workers2:
+    image: qureai/cxr_api:${CXRAPI_TAG}
+    container_name: worker2
+    command: bash -c "source activate cxr && python manage.py startworker"
+    restart: unless-stopped
+    volumes:
+    - qxr-data:/srv/data
+    - qxr-checkpoints:/srv/cxr_checkpoints
+    cpuset: 0,1,2,3,4,6,7,8,9,10
+    env_file: cxr.env
+
+  workers3:
+    image: qureai/cxr_api:${CXRAPI_TAG}
+    container_name: worker3
+    command: bash -c "source activate cxr && python manage.py startworker"
+    restart: unless-stopped
+    volumes:
+    - qxr-data:/srv/data
+    - qxr-checkpoints:/srv/cxr_checkpoints
+    cpuset: 0,1,2,3,4,6,7,8,9,10
+    env_file: cxr.env
+
+  workers4:
+    image: qureai/cxr_api:${CXRAPI_TAG}
+    container_name: worker4
+    command: bash -c "source activate cxr && python manage.py startworker"
+    restart: unless-stopped
+    volumes:
+    - qxr-data:/srv/data
+    - qxr-checkpoints:/srv/cxr_checkpoints
+    cpuset: 0,1,2,3,4,6,7,8,9,10
+    env_file: cxr.env
+
+  workers5:
+    image: qureai/cxr_api:${CXRAPI_TAG}
+    container_name: worker5
+    command: bash -c "source activate cxr && python manage.py startworker"
+    restart: unless-stopped
+    volumes:
+    - qxr-data:/srv/data
+    - qxr-checkpoints:/srv/cxr_checkpoints
+    cpuset: 0,1,2,3,4,6,7,8,9,10
+    env_file: cxr.env
+
+volumes:
+  qxr-data:
+    external: true
+  qxr-notebooks:
+    external: true
+  qxr-checkpoints:
+    external: true

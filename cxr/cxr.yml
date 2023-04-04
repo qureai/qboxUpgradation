@@ -1,0 +1,31 @@
+version: "2"
+services:
+  cxrapi:
+    image: qureai/cxr_api:${CXRAPI_TAG}
+    container_name: cxr_api
+    command: bash -c "../start.sh"
+    restart: unless-stopped
+    ports: ["3888:8888", "3000:80"]
+    volumes:
+      - qxr-checkpoints:/srv/cxr_checkpoints
+      - qxr-data:/srv/data
+      - qxr-notebooks:/srv/notebooks
+    env_file: cxr.env
+
+  cxrapi_sync:
+    image: qureai/cxr_api:${CXRAPI_TAG}
+    container_name: cxrapi_sync
+    restart: unless-stopped
+    command: bash -c "source activate cxr && python manage.py startsync"
+    volumes:
+       - qxr-data:/srv/data
+       - qxr-checkpoints:/srv/cxr_checkpoints
+    env_file: cxr.env
+ 
+volumes:
+  qxr-data:
+    external: true
+  qxr-notebooks:
+    external: true
+  qxr-checkpoints:
+    external: true
