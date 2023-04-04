@@ -1,0 +1,65 @@
+{
+  "api": {
+      "base_url": "http://172.17.0.1:2000/qxr/",
+      "source": "chaiDemoQbox_1",
+      "user": "chaiDemoQbox_1",
+      "token": "eb6cf351a964148808b4be5aee196c7ea0bd9892",
+      "sitename": "chaiDemoQbox_1",
+    "timeout": 30,
+    "num_threads": 5
+  },
+  "publishers": [
+    {
+      "type": "logging",
+      "common": {
+        "enabled": true
+      }
+    }
+  ],
+  "upload": {
+    "batch_size": 32,
+    "anonymize_fields": false,
+    "fields_to_anonymize": [],
+    "compression": {
+      "enabled": false,
+      "options": "+eb"
+    }
+  },
+  "system": {
+    "stability": {
+      "check_delay": 0,
+      "type": "series",
+      "process_delay": 15
+    }
+  },
+  "compute": {
+    "enabled": true
+  },
+  "results": {
+    "enabled": true,
+    "cases": {
+      "success": [
+        {"status": 200, "results": {"success": true}},
+        {"status": 200, "results": {"success": false, "integrity": false}}
+      ],
+      "try_again": [
+        {"status": 200, "results": {"success": false, "integrity": true}},
+        {"status": 202},
+        {"status": 409}
+      ]
+    }
+  },
+  "cleanup": {
+    "enabled": true,
+    "frequency": 3600,
+    "registration_tasks": {
+      "enabled": true,
+      "delay": 0
+    },
+    "processed_studies": {
+      "enabled": true,
+      "creation_delay": 172800,
+      "delay": 172800
+    }
+  }
+}

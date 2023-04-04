@@ -1,0 +1,48 @@
+version: "3"
+services:
+  dcmio_web_server:
+    image: qureai/dcmio:${DCMIO_TAG}
+    container_name: dcmio_web_server
+    command: web_server
+    restart: unless-stopped
+    volumes:
+      - dcmio-data:/dcmio/data
+      - dcmio-notebooks:/dcmio/notebooks
+      - ./conf.json:/srv/dcmio/conf.json
+    ports:
+      - "7888:8888"
+      - "8080:80"
+    env_file: "./dcmio.env"
+  dcmio_dicom_server:
+    image: qureai/dcmio:${DCMIO_TAG}
+    container_name: dcmio_dicom_server
+    command: dicom_server
+    restart: unless-stopped
+    depends_on:
+      - dcmio_web_server
+    volumes:
+      - dcmio-data:/dcmio/data
+      - ./conf.json:/srv/dcmio/conf.json
+    ports:
+      - "5252:5252"
+      - "7000:7000"
+    env_file: "./dcmio.env"
+  dcmio_worker:
+    image: qureai/dcmio:${DCMIO_TAG}
+    container_name: dcmio_worker
+    command: worker
+    restart: unless-stopped
+    depends_on:
+      - dcmio_web_server
+    volumes:
+      - dcmio-data:/dcmio/data
+      - ./conf.json:/srv/dcmio/conf.json
+    env_file: "./dcmio.env"
+
+
+volumes:
+  dcmio-data:
+    external: true
+  dcmio-notebooks:
+    external: true
+
