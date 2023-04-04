@@ -1,0 +1,41 @@
+groups:
+- name: Memory
+  rules:
+  - alert: HostOutOfMemory
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 5
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      title: QBox is running out of memory
+      description: "Node memory is filling up (< 5% left for the last 10 minutes) Memory Usage = {{ $value }}%\n"
+- name: CPU
+  rules:
+  - alert: HostHighCpuLoad
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 95
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      title: QBox has high CPU usage
+      description: "CPU load is > 95% (usage: {{ $value }}% for the last 10 minutes)\n"
+- name: disk 
+  rules:
+  - alert: HostOutOfDiskSpace
+    expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      title: High Disk usage
+      description: "Disk is almost full (< 10% left for the last 2 minutes) (Space left: {{ $value }})\n"
+- name: page_faults 
+  rules:
+  - alert: HostMemoryUnderMemoryPressure
+    expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: High page faults
+      description: "The node is under heavy memory pressure. Had {{ $value }} pagefaults per second for the last 5 minutes\n"

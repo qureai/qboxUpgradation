@@ -1,0 +1,62 @@
+version: '3'
+
+volumes:
+  prometheus-data:
+    external: true
+  alertmanager-data:
+    external: true
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.36.1
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # Move prometheus.yml in this directory to /etc/prometheus/
+      # This is needed since its standardized and you can change the config
+      # and restart prometheus, chaning config in host system is more convenient
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--log.level=debug"
+
+  alert_manager:
+    image: qureai/alertmanager:1.0.0
+    container_name: alertmanager
+    restart: unless-stopped
+    env_file:
+      - ".env"
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./prometheus/alertmanager.template.yml:/home/alertmanager.template.yml
+      - alertmanager-data:/data
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.3.1
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      # We need to bind to the host, otherwise docker would give container process's sys metrics as result
+      # NOTE: To read up on what rslave and other options mean, look here: https://segmentfault.com/a/1190000040626806/en
+      # Basically, it means that any change in the host FS would reflect in real time to this docker container
+      # including that of all subdirectories in real time
+      # Its officially called bind propagation
+      - '/:/host:ro,rslave'
+
+  onpremstats:
+    image: qureai/onpremstats:1.0.4
+    container_name: onpremstats
+    restart: unless-stopped
+    command: ["/usr/local/bin/python", "/qure/py_cron.py"]
+    env_file:
+    - ".env"
+
