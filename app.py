@@ -19,7 +19,16 @@ def update():
     installation_mode = request.form.get('installation_mode')
     print(apihub, cxr, tkt, installation_mode)
     if installation_mode =='online':
-        pass
+        print('online mode')
+        if subprocess.run(['bash', 'pull-image.sh']).returncode == 0:
+            print("pulling dockers completed")
+            subprocess.run(['python3', 'notification.py', 'pulling dockers completed'])
+        else:
+            subprocess.run(['python3', 'notification.py',
+                        'docker pull failed and stopped'])
+            exit()
+    else:
+        print('offline mode')
     subprocess.run(['python3', 'notification.py',
                    'upgradation starting for ticker number : '+tkt])
     replacepath(apihub, cxr)

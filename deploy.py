@@ -5,13 +5,13 @@ import subprocess
 subprocess.run(['docker', 'login', '-u', 'ajayrajqure', '-p', 'zpsbS8BR2Q'])
 
 # Pull Docker images
-if subprocess.run(['bash', 'pull-image.sh']).returncode == 0:
-    print("pulling dockers completed")
-    subprocess.run(['python3', 'notification.py', 'pulling dockers completed'])
-else:
-    subprocess.run(['python3', 'notification.py',
-                   'docker pull failed and stopped'])
-    exit()
+# if subprocess.run(['bash', 'pull-image.sh']).returncode == 0:
+#     print("pulling dockers completed")
+#     subprocess.run(['python3', 'notification.py', 'pulling dockers completed'])
+# else:
+#     subprocess.run(['python3', 'notification.py',
+#                    'docker pull failed and stopped'])
+#     exit()
 
 # Upgrade PostgreSQL database
 os.chdir('/qureupdate/misc')
