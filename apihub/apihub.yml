@@ -1,0 +1,71 @@
+version: "3"
+services:
+  apihub:
+    image: qureai/apihub:${APIHUB_TAG}
+    container_name: apihub
+    restart: unless-stopped
+    command: bash -c "../start.sh"
+    volumes:
+       - qxr-data:/srv/data
+       - apihub-notebooks:/srv/notebooks
+    ports:
+      - "2000:80"
+      - "2888:8888"
+    depends_on:
+      - postgres
+    env_file: apihub.env
+  
+  apihub_sync:
+    image: qureai/apihub:${APIHUB_TAG}
+    container_name: qtrack_sync
+    restart: unless-stopped
+    command: bash -c "source activate apihub && python manage.py sync"
+    depends_on:
+     - postgres
+    volumes:
+      - qxr-data:/srv/data
+    env_file: apihub.env
+  
+  redis:
+    image: redis:${REDIS_TAG}
+    container_name: ws_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:${POSTGRES_TAG}
+    container_name: psql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+    env_file: psql.env
+
+  frontend:
+    image: qureai/qtrack_web.frontend:${QTRACK_FRONTEND_TAG}
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+        - "8000:80"
+        - "3443:443"
+    env_file: apihub.env
+  
+  checkpoints:
+    image: qureai/qxr_checkpoints:${CHECKPOINTS_TAG}
+    container_name: checkpoints
+    command: sh -c "cp -Ru /cxr_checkpoints/ /final/ && tail -f /dev/null"
+    restart: unless-stopped
+    volumes:
+      - qxr-checkpoints:/final/cxr_checkpoints
+
+volumes:
+  qxr-data:
+    external: true
+  apihub-notebooks:
+    external: true
+  psql-data:
+    external: true
+  qxr-checkpoints:
+    external: true
