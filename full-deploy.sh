@@ -1,27 +1,5 @@
 set -e
-#export PATH=/home/qureai_support/bin:/home/qureai_support/.local/bin:$PATH
-docker login -u ajayrajqure -p zpsbS8BR2Q
 
-cd /qureupdate
-python3 notification.py "upgradation started, pulling dockers"
-echo "pulling all docker images"
-
-#bash pull-image.sh 
-
-if bash pull-image.sh;then
-    python3 notification.py "pulling dockers completed"
-else 
-    exit && python3 notification.py "docker pull failed and stopped" 
-fi
-
-
-
-cd /qureupdate/misc
-
-bash psqlupgrade.sh
-
-#aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 011855203472.dkr.ecr.ap-south-1.amazonaws.com
-# docker login -u ajayrajqure -p zpsbS8BR2Q
 echo "taking backups of cxr and apihub"
 
 cd /qureupdate/misc
@@ -33,16 +11,6 @@ python3 envchange.py
 python3 ymlchange.py
 
 cd /qureupdate
-# python3 notification.py "upgradation started, pulling dockers"
-# echo "pulling all docker images"
-
-# #bash pull-image.sh 
-
-# if bash pull-image.sh;then
-#     python3 notification.py "pulling dockers completed"
-# else 
-#     exit && python3 notification.py "docker pull failed and stopped" 
-# fi
 
 echo "removing previous dockers"
 

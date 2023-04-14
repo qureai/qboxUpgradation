@@ -3,7 +3,7 @@ set -e
 cd /qureupdate
 set -a
 source .env
-
+docker login -u ajayrajqure -p zpsbS8BR2Q
 # docker-compose -p apihub -f apihub/apihub.yml pull
 # docker-compose -p cxr -f cxr/cxr.yml pull
 # docker-compose -p cxr -f cxr/workers.yml pull

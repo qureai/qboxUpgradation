@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
+from slack_sdk import WebClient
 import os
 import fileinput
 import subprocess
+from healper import slackNotification
 app = Flask(__name__)
 #socketio = SocketIO(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
@@ -22,44 +24,28 @@ def update():
     tkt = request.form.get("ticketno")
     installation_mode = request.form.get('installation_mode')
     print(apihub, cxr, tkt, installation_mode)
+    
     if installation_mode =='online':
+        slackNotification('upgradation starting for ticker number : '+tkt)
         print('online mode')
         if subprocess.run(['bash', 'pull-image.sh']).returncode == 0:
             print("pulling dockers completed")
+            subprocess.run(['bash', './misc/psqlupgrade.sh'])
+            slackNotification('pulling dockers completed')
             #subprocess.run(['python3', 'notification.py', 'pulling dockers completed'])
         else:
+            slackNotification('docker pull failed and stopped')
             # subprocess.run(['python3', 'notification.py',
             #             'docker pull failed and stopped'])
             exit()
     else:
         print('offline mode')
-    # subprocess.run(['python3', 'notification.py',
-    #                'upgradation starting for ticker number : '+tkt])
-    # replacepath(apihub, cxr)
-    subprocess.run(['python3', 'deploy.py'])
+    replacepath(apihub, cxr)
+    #subprocess.run(['python3', 'deploy.py'])
 
     socketio.start_background_task(target=deploy_task)
     return "Update request received."
 
-
-# def deploy_task():
-#     with open("output.log", "w") as log:
-#         process = subprocess.Popen(
-#             ['python3', 'deploy.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-#         for line in process.stdout:
-#             log.write(line)
-#             socketio.emit("deploy_output", {
-#                           "message": line.strip()}, namespace="/deploy")
-
-#         return_code = process.wait()
-#         if return_code == 0:
-#             socketio.emit("deploy_output", {
-#                           "status": "success", "message": "Deployment completed."}, namespace="/deploy")
-#         else:
-#             socketio.emit("deploy_output", {
-#                           "status": "failure", "message": "Deployment failed."}, namespace="/deploy")
-            
             
 @socketio.on('connect', namespace='/deploy')
 def deploy_connect():
@@ -69,7 +55,7 @@ def deploy_connect():
 def deploy_task():
     with open("output.log", "w") as log:
         process = subprocess.Popen(
-            ['python3', 'deploy.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            ['bash', 'full-deploy.sh'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         for line in process.stdout:
             print("Sending line:", line.strip())  # Add this line
@@ -83,28 +69,6 @@ def deploy_task():
         else:
             socketio.emit("deploy_output", {
                           "status": "failure", "message": "Deployment failed."})
-
-
-
-
-# def deploy_task():
-#     with open("output.log", "w") as log:
-#         process = subprocess.Popen(
-#             ['python3', 'deploy.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-#         for line in process.stdout:
-#             log.write(line)
-#             emit("deploy_output", {
-#                  "message": line.strip()}, namespace="/deploy")
-
-#         return_code = process.wait()
-#         if return_code == 0:
-#             emit("deploy_output", {
-#                  "status": "success", "message": "Deployment completed."}, namespace="/deploy")
-#         else:
-#             emit("deploy_output", {
-#                  "status": "failure", "message": "Deployment failed."}, namespace="/deploy")
-
 
 
 def replacepath(apihub, cxr):
