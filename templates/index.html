@@ -36,6 +36,42 @@
             text-align: center;
         }
     </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script>
+  $(document).ready(function() {
+    $('form').on('submit', function(event) {
+      event.preventDefault();
+      const formData = $(this).serialize();
+      $.post('/update', formData)
+        .done(function(data) {
+          console.log('Update request sent');
+        })
+        .fail(function() {
+          console.error('Failed to send update request');
+        });
+    });
+
+    const socket = io.connect();
+
+    socket.on('connect', function() {
+      console.log('Connected to deploy namespace');
+    });
+    
+    socket.on('deploy_output', function(data) {
+      console.log('Received deploy_output event:', data); // Add this line
+      const outputBox = document.getElementById('output-box');
+      outputBox.innerHTML += data.message + '<br>';
+      if (data.status === 'failure') {
+        outputBox.style.color = 'red';
+      }
+    });
+  });
+</script>
+
+
   </head>
   <body>
     <h1>qUpdater</h1>
@@ -58,5 +94,6 @@
 
       <button type="submit">Update</button>
     </form>
+    <div id="output-box" style="margin-top: 20px; font-family: monospace;"></div>
   </body>
 </html>
