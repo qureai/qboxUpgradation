@@ -91,6 +91,6 @@ for i in range(len(newpath)):
     # else:
     #     change=input("asking 1 more time, you want to make any changes y/n\n")
     # print("final env will look like this\n\n")
-    show_env(tag_dict_new)
+    #show_env(tag_dict_new)
     file_update(newpath[i], tag_dict_new)
     print("changed", newpath[i])
